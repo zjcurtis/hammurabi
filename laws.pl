@@ -73,3 +73,9 @@ death_penalty(Actor, Crime) :-
 % Helper predicate to get reason for a consequence
 reason_for_consequence(Actor, Crime, Punishment, Reason) :-
     consequence(Actor, Crime, Punishment, Reason).
+
+% Law 36
+illegal_sale(Asset,Seller,_) :-
+  status(Seller,Status),
+  member(Status,[chieftan,man,subject_to_quit_rent]),
+  Asset = [field,garden,house].
