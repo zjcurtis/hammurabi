@@ -27,6 +27,25 @@ consequence(Actor, ensnarement, death_penalty, reason(Law, Conditions)) :-
     ),
     call(Conditions).
 
+% Law Two
+court_transfer(house,Owner,Accuser) :-
+  claims(Accuser,Owner,X),
+  crime(X),
+  chose_ordeal(Owner,river_ordeal),
+  ordeal_result(Owner,drowned).
+
+court_transfer(house,Accuser,Owner) :-
+  claims(Accuser,Owner,X),
+  crime(X),
+  chose_ordeal(Owner,river_ordeal),
+  ordeal_result(Owner,unhurt).
+
+death_penalty(Person,false_claims) :-
+  claims(Person,Defendant,X),
+  crime(X),
+  chose_ordeal(Defendant,river_ordeal),
+  ordeal_result(Defendant,unhurt).
+
 % Law Three
 consequence(Actor, false_charge, death_penalty, reason(Law, Conditions)) :-
     Law = 'Law Three',
