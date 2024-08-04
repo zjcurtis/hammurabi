@@ -17,15 +17,11 @@ is_temple_or_court(court).
 
 
 % Law One
-consequence(Actor, ensnarement, death_penalty, reason(Law, Conditions)) :-
-    Law = 'Law One',
-    Conditions = (
-        action(Actor, ensnarement, Recipient),
-        action(Actor, ban, Recipient),
-        accusation(Actor, Crime, Recipient),
-        \+ proven_crime(Recipient, Crime)
-    ),
-    call(Conditions).
+death_penalty(Person, ensnarement) :-
+    action(Person, ensnarement, Recipient),
+    action(Person, ban, Recipient),
+    accusation(Actor, Crime, Recipient),
+    \+ proven_crime(Recipient, Crime).
 
 % Law Two
 court_transfer(house,Owner,Accuser) :-
@@ -47,51 +43,27 @@ death_penalty(Person,false_claims) :-
   ordeal_result(Defendant,unhurt).
 
 % Law Three
-consequence(Actor, false_charge, death_penalty, reason(Law, Conditions)) :-
-    Law = 'Law Three',
-    Conditions = (
-        accusation(Actor, Alleged_Crime, Recipient),
+death_penalty(Person, false_charge) :-
+
+        accusation(Person, Alleged_Crime, Recipient),
         capital_crime(Alleged_Crime),
-        \+ proven_crime(Recipient, Alleged_Crime)
-    ),
-    call(Conditions).
+        \+ proven_crime(Recipient, Alleged_Crime).
 
 % Law Four
-consequence(Actor, accusation(Actor,Crime,Recipient), receipt_levied_fines, reason(Law, Conditions)) :-
-    Law = 'Law Four',
-    Conditions = (
+money_reward(Actor, accusation(Actor,Crime,Recipient)) :-
         spoke_to(Actor,elders,accusation(Actor,Crime,Recipient)),
         consequence(Recipient,Crime,fines_levied,_),
-        proven_crime(Recipient,Crime)
-    ),
-    call(Conditions).
-
+        proven_crime(Recipient,Crime).
 
 % Law Six
-consequence(Actor, theft, death_penalty, reason(Law, Conditions)) :-
-    Law = 'Law Six',
-    Conditions = (
-        action(Actor, theft, Plaintiff),
-        is_temple_or_court(Plaintiff)
-    ),
-    call(Conditions).
+death_penalty(Person, theft) :-
+        action(Person, theft, Plaintiff),
+        is_temple_or_court(Plaintiff).
 
-consequence(Actor, receipt_stolen_goods, death_penalty, reason(Law, Conditions)) :-
-    Law = 'Law Six',
-    Conditions = (
+death_penalty(Person, receipt_stolen_goods) :-
         action(Thief, theft, Plaintiff),
-        action(Actor, receipt_stolen_goods, Thief),
-        is_temple_or_court(Plaintiff)
-    ),
-    call(Conditions).
-
-% Helper predicate to check for death penalty
-death_penalty(Actor, Crime) :- 
-    consequence(Actor, Crime, death_penalty, _).
-
-% Helper predicate to get reason for a consequence
-reason_for_consequence(Actor, Crime, Punishment, Reason) :-
-    consequence(Actor, Crime, Punishment, Reason).
+        action(Person, receipt_stolen_goods, Thief),
+        is_temple_or_court(Plaintiff).
 
 % Law 36
 illegal_sale(Asset,Seller,_) :-
