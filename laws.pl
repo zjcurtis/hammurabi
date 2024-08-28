@@ -52,6 +52,23 @@ death_penalty(Person,welcomed_into_home(Person,Slave)) :-
 death_penalty(Person,robbery) :-
         caught(_,Person,robbery).
 
+% Law 109
+death_penalty(Person,abetting_conspirators) :-
+        status(Person,tavernkeeper),
+        meeting(conspirators,tavern),
+        \+ delivers_to_justice(Person,conspirators).
+
+% Law 110
+%If a "sister of a god" open a tavern, or enter a tavern to drink, then shall this woman be burned to death.
+death_penalty(Person,opened_tavern) :-
+        status(Person,sister_of_god),
+        status(Person,tavernkeeper).
+
+death_penalty(Person,entered_tavern) :-
+        status(Person,sister_of_god),
+        entered_tavern(Person).
+
+
 % Law Two
 court_transfer(house,Owner,Accuser) :-
         claims(Accuser,Owner,X),
