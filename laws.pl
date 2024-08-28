@@ -1,26 +1,13 @@
 :- use_module(library(debug)).
 :- use_module(library(lists)).
-
-
-proven_crime(joshua, adultery).
-accusation(joe, murder, joshua).
-action(joe, ensnarement, joshua).
-action(joe, ban, joshua).
-action(jacob, theft, temple).
-action(jeffery, receipt_stolen_goods, jacob).
-capital_crime(murder).
-spoke_to(joe, elders, accusation(joe, murder, joshua)).
-
-% Predicates for specific locations
-is_temple_or_court(temple).
-is_temple_or_court(court).
+:- use_module(facts).
 
 
 % Law One
 death_penalty(Person, ensnarement) :-
     action(Person, ensnarement, Recipient),
     action(Person, ban, Recipient),
-    accusation(Actor, Crime, Recipient),
+    accusation(Person, Crime, Recipient),
     \+ proven_crime(Recipient, Crime).
 
 % Law Two
@@ -55,6 +42,17 @@ money_reward(Actor, accusation(Actor,Crime,Recipient)) :-
         consequence(Recipient,Crime,fines_levied,_),
         proven_crime(Recipient,Crime).
 
+% Law Five
+civil_penalty(Judge, Case, Penalties) :-
+    tried_case(Judge, Case),
+    reached_decision(Judge, Case, Decision),
+    presented_judgment_in_writing(Judge, Case, Decision),
+    later_error_appeared(Case, Decision),
+    error_through_own_fault(Judge, Case, Decision),
+    set_fine(Judge, Case, OriginalFine),
+    Fine is 12 * OriginalFine,
+    Penalties = [pay(Fine),impeachment].
+
 % Law Six
 death_penalty(Person, theft) :-
         action(Person, theft, Plaintiff),
@@ -65,8 +63,27 @@ death_penalty(Person, receipt_stolen_goods) :-
         action(Person, receipt_stolen_goods, Thief),
         is_temple_or_court(Plaintiff).
 
+% Law 14
+% 14. If any one steal the minor son of another, he shall be put to death.
+
+death_penalty(Person, stole(Person,Kidnapped)) :-
+        male(Kidnapped),
+        minor(Kidnapped).
+
+% Law 16
+death_penalty(Person,welcomed_into_home(Person,Slave)) :-
+        fugitive(Slave),
+        owner(Slaveholder,Slave),
+        (status(Slaveholder,court); status(Slaveholder,freedman)),
+        public_proclamation(major_domus,return_slave(Slave)),
+        harbored_slave(Person,Slave).
+
+% Law 22. If any one is committing a robbery and is caught, then he shall be put to death.
+death_penalty(Person,robbery) :-
+        caught(_,Person,robbery).
+
 % Law 36
-illegal_sale(Asset,Seller,_) :-
-  status(Seller,Status),
-  member(Status,[chieftan,man,subject_to_quit_rent]),
-  Asset = [field,garden,house].
+illegal_sale(Asset, Seller, _) :-
+        status(Seller, Status),
+        member(Status, [chieftan, man, subject_to_quit_rent]),
+        member(Asset, [field, garden, house]).
